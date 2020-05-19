@@ -2,4 +2,4 @@
 
 A POC Project on How to implement OAuth2 in GO
 
-*forked from github.com/syahriarreza/poc-go-oauth2
+*forked from github.com/BNPrashanth/poc-go-oauth2
