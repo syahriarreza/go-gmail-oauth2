@@ -6,6 +6,7 @@ import (
 	"strings"
 	"text/template"
 
+	tk "github.com/eaciit/toolkit"
 	"github.com/syahriarreza/go-gmail-oauth2/internal/logger"
 	"golang.org/x/oauth2"
 )
@@ -15,11 +16,15 @@ func HandleMain(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
+	data := []tk.M{}
+	data = append(data, tk.M{"title": "Google", "url": "/login-gl", "disabled": false})
+	data = append(data, tk.M{"title": "Facebook", "url": "/login-fb", "disabled": true})
+
 	t, err := template.ParseFiles("views/index.html")
 	if err != nil {
 		logger.Log.Error("Unable to load template: index.html")
 	}
-	t.Execute(w, nil)
+	t.Execute(w, data)
 }
 
 //HandleLogin Function

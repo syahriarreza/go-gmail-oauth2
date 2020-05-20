@@ -28,6 +28,7 @@ func main() {
 	http.HandleFunc("/callback-fb", services.CallBackFromFacebook)
 	http.HandleFunc("/login-gl", services.HandleGoogleLogin)
 	http.HandleFunc("/callback-gl", services.CallBackFromGoogle)
+	http.HandleFunc("/send-email", services.SendEmail)
 
 	logger.Log.Info("Started running on http://localhost:" + viper.GetString("port"))
 	log.Fatal(http.ListenAndServe(":"+viper.GetString("port"), nil))

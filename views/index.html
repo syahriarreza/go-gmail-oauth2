@@ -3,13 +3,24 @@
 		<title>OAuth-2 Test</title>
 	</head>
 	<body>
+		<style>
+			.isDisabled {
+				color: currentColor;
+				cursor: not-allowed;
+				opacity: 0.5;
+				text-decoration: none;
+				pointer-events: none;
+			}
+		</style>
+
 		<h2>OAuth-2 Login Test</h2>
-		<p>
+		<p id="prg">
 			Login with the following:
 		</p>
 		<ul>
-			<li><a href="/login-gl">Google</a></li>
-			<!-- <li><a href="/login-fb">Facebook</a></li> -->
+			{{range .}}
+			<li><a href="{{.url}}" {{if .disabled}} class="isDisabled" {{end}}>{{.title}}</a></li>
+			{{end}}
 		</ul>
 	</body>
 </html>

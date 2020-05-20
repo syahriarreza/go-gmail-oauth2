@@ -1,0 +1,45 @@
+<html>
+	<head>
+        <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+		<title>OAuth-2 Test</title>
+    </head>
+    <script>
+        function send() {
+            $('form').submit();
+        }
+    </script>
+	<body>
+		<h2>OAuth-2 Login Test</h2>
+        <p>Hi you've been logged in with</p>
+        <p>Gmail: {{.email}}</p>
+        <p>ID: {{.id}}</p>
+
+        <form action="/send-email" method="post">
+            <table style="width:100%">
+                <tr>
+                    <td>From</td>
+                    <td><input type="text" id="from" name="from" value="me"></td>
+                </tr>
+                <tr>
+                    <td>Reply-to</td>
+                    <td><input type="text" id="reply-to" name="reply-to" value="no-reply@gmail.com"></td>
+                </tr>
+                <tr>
+                    <td>To</td>
+                    <td><input type="text" id="to" name="to" value="syahriar.reza@gmail.com"></td>
+                </tr>
+                <tr>
+                    <td>Subject</td>
+                    <td><input type="text" id="subject" name="subject"></td>
+                </tr>
+                <tr>
+                    <td>Content</td>
+                    <td><textarea id="content" name="content" cols="30" rows="10"></textarea></td>
+                </tr>
+            </table>
+       </form>
+
+       <button onclick="send()">Send</button>
+
+	</body>
+</html>
