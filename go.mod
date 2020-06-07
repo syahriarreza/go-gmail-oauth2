@@ -9,4 +9,5 @@ require (
 	go.uber.org/zap v1.10.0
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	google.golang.org/api v0.24.0
+	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )

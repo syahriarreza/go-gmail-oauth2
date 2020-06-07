@@ -22,6 +22,7 @@ func HandleMain(w http.ResponseWriter, r *http.Request) {
 	data = append(data, tk.M{"title": "Google", "url": "/login-gl", "disabled": false})
 	data = append(data, tk.M{"title": "Facebook", "url": "/login-fb", "disabled": true})
 	data = append(data, tk.M{"title": "Google API", "url": "/login-gl-api", "disabled": false})
+	data = append(data, tk.M{"title": "Send Mail using Credentials & Token", "url": "/callback-gl", "disabled": false})
 
 	t, err := template.ParseFiles("views/index.html")
 	if err != nil {

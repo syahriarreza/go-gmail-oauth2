@@ -2,9 +2,11 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 	"text/template"
 
 	tk "github.com/eaciit/toolkit"
@@ -14,6 +16,7 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/gmail/v1"
+	gomail "gopkg.in/gomail.v2"
 )
 
 var (
@@ -54,7 +57,11 @@ func CallBackFromGoogleAPI(w http.ResponseWriter, r *http.Request) {
 	authCode = r.FormValue("code")
 	logger.Log.Info("code: " + authCode)
 
-	token, _ := helper.GetToken(oauthConfig, authCode)
+	token, err := helper.GetToken(oauthConfig, authCode)
+	if err != nil {
+		w.Write([]byte("ERROR GetToken: " + err.Error()))
+		return
+	}
 	logger.Log.Info("GET: https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + url.QueryEscape(token.AccessToken))
 	resp, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + url.QueryEscape(token.AccessToken))
 	if err != nil {
@@ -75,6 +82,7 @@ func CallBackFromGoogleAPI(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Unjson error"))
 		return
 	}
+	tk.Println("RESPONSE!!!", respM)
 
 	t, err := template.ParseFiles("views/dashboard.html")
 	if err != nil {
@@ -85,6 +93,22 @@ func CallBackFromGoogleAPI(w http.ResponseWriter, r *http.Request) {
 
 //GetGmailServiceAPI get gmail service based on token
 func GetGmailServiceAPI() (*gmail.Service, error) {
+	if oauthConfig.ClientID == "" {
+		credByte, err := ioutil.ReadFile(viper.GetString("credentials-output-path"))
+		if err != nil {
+			errMsg := "unable to read credentials.json " +
+				"(" + viper.GetString("credentials-output-path") + "), " +
+				"then proceed with user manual authentication"
+			logger.Log.Error(errMsg)
+			return nil, fmt.Errorf(errMsg)
+		}
+
+		oauthConfig, err = google.ConfigFromJSON(credByte, ConfigScopes...) //--handles google login using credentials.json
+		if err != nil {
+			return nil, fmt.Errorf("unable to parse credentials file to config: " + err.Error())
+		}
+	}
+
 	token, _ := helper.GetToken(oauthConfig, authCode)
 
 	client := oauthConfig.Client(context.Background(), token)
@@ -101,12 +125,21 @@ func GetGmailServiceAPI() (*gmail.Service, error) {
 func SendEmailAPI(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
+	m := gomail.NewMessage()
+	recs := []string{
+		m.FormatAddress(r.Form.Get("to"), "Syahriar Reza"),
+		m.FormatAddress("mamoru_akira@yahoo.com", "Mamoru Akira"),
+	}
+
 	msgRFC := helper.MessageRFC2822{
 		Headers: tk.M{
-			"From":     "'" + r.Form.Get("from") + "'", //TODO: try change to gmail
-			"reply-to": r.Form.Get("reply-to"),
-			"To":       r.Form.Get("to"),
-			"Subject":  r.Form.Get("subject"),
+			"From": "'" + r.Form.Get("from") + "'", //TODO: try change to gmail
+			// "reply-to": r.Form.Get("reply-to"),
+			// "To":      r.Form.Get("to") + ",mamoru_akira@yahoo.com",
+			"To":      strings.Join(recs, ","),
+			"Cc":      "test-cc@gmail.com",
+			"Bcc":     "test-bcc@gmail.com",
+			"Subject": r.Form.Get("subject"),
 		},
 		Body: r.Form.Get("content"),
 	}
